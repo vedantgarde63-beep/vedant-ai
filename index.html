@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Vedant AI — your personal AI assistant.">
+  <title>Vedant AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <aside class="sidebar">
+      <div class="brand">✦ <span>Vedant AI</span></div>
+      <button id="newChat" class="new-chat">＋ New chat</button>
+      <div class="side-note">Your conversations stay in this browser.</div>
+    </aside>
+
+    <section class="chat">
+      <header class="topbar">
+        <div>
+          <h1>Vedant AI</h1>
+          <p>Ask anything</p>
+        </div>
+        <button id="theme" class="icon-btn" aria-label="Toggle theme">☀</button>
+      </header>
+
+      <div id="messages" class="messages">
+        <div class="welcome">
+          <div class="orb">✦</div>
+          <h2>How can I help?</h2>
+          <p>Ask Vedant AI a question to get started.</p>
+          <div class="suggestions">
+            <button>Explain something simply</button>
+            <button>Help me write something</button>
+            <button>Give me a creative idea</button>
+          </div>
+        </div>
+      </div>
+
+      <form id="chatForm" class="composer">
+        <textarea id="input" rows="1" maxlength="8000"
+          placeholder="Message Vedant AI..." autocomplete="off"></textarea>
+        <button id="send" type="submit" aria-label="Send message">➤</button>
+      </form>
+      <div class="disclaimer">Vedant AI can make mistakes. Check important information.</div>
+    </section>
+  </main>
+
+<script>
+const messagesEl = document.getElementById("messages");
+const input = document.getElementById("input");
+const form = document.getElementById("chatForm");
+const send = document.getElementById("send");
+let messages = [];
+
+function addMessage(role, text) {
+  const row = document.createElement("div");
+  row.className = "row " + role;
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+  row.appendChild(bubble);
+  messagesEl.appendChild(row);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function clearWelcome() {
+  const welcome = messagesEl.querySelector(".welcome");
+  if (welcome) welcome.remove();
+}
+
+async function sendMessage(text) {
+  clearWelcome();
+  addMessage("user", text);
+  messages.push({ role: "user", content: text });
+
+  send.disabled = true;
+  input.disabled = true;
+  addMessage("assistant", "Thinking…");
+  const thinking = messagesEl.lastElementChild.querySelector(".bubble");
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Request failed");
+
+    thinking.textContent = data.reply;
+    messages.push({ role: "assistant", content: data.reply });
+  } catch (err) {
+    thinking.textContent = "⚠ " + err.message;
+  } finally {
+    send.disabled = false;
+    input.disabled = false;
+    input.focus();
+  }
+}
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text || send.disabled) return;
+  input.value = "";
+  input.style.height = "auto";
+  sendMessage(text);
+});
+
+input.addEventListener("input", () => {
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 160) + "px";
+});
+
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    form.requestSubmit();
+  }
+});
+
+document.getElementById("newChat").onclick = () => {
+  messages = [];
+  messagesEl.innerHTML = `
+    <div class="welcome">
+      <div class="orb">✦</div>
+      <h2>How can I help?</h2>
+      <p>Ask Vedant AI a question to get started.</p>
+      <div class="suggestions">
+        <button>Explain something simply</button>
+        <button>Help me write something</button>
+        <button>Give me a creative idea</button>
+      </div>
+    </div>`;
+  wireSuggestions();
+};
+
+document.getElementById("theme").onclick = () => {
+  document.body.classList.toggle("light");
+};
+
+function wireSuggestions() {
+  document.querySelectorAll(".suggestions button").forEach(btn => {
+    btn.onclick = () => {
+      input.value = btn.textContent;
+      input.focus();
+    };
+  });
+}
+wireSuggestions();
+</script>
+</body>
+</html>
