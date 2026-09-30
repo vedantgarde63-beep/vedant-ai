@@ -3,152 +3,249 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Vedant AI — your personal AI assistant.">
+  <meta name="description" content="Vedant AI - an AI assistant">
   <title>Vedant AI</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0b0f19;
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      border-bottom: 1px solid #252b3a;
+      background: #101522;
+      flex-shrink: 0;
+    }
+    .logo { font-size: 23px; font-weight: 700; }
+    .logo span { color: #7c6cff; }
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 16px;
+    }
+    .chat-inner { max-width: 900px; margin: 0 auto; }
+    .welcome {
+      text-align: center;
+      margin-top: 18vh;
+      padding: 20px;
+    }
+    .welcome .icon {
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 18px;
+      border-radius: 20px;
+      background: #7c6cff;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .welcome h1 { font-size: 38px; margin-bottom: 10px; }
+    .welcome p { color: #9da5b4; font-size: 17px; }
+    .message {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      align-items: flex-start;
+    }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #7c6cff;
+      flex: 0 0 36px;
+      font-weight: 700;
+    }
+    .user .avatar { background: #303747; }
+    .bubble {
+      max-width: 78%;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .user .bubble {
+      background: #202737;
+      padding: 10px 15px;
+      border-radius: 14px;
+    }
+    .ai .bubble { padding-top: 5px; }
+    .typing { color: #8d96a8; font-style: italic; }
+    .input-area {
+      padding: 14px;
+      border-top: 1px solid #252b3a;
+      background: #101522;
+    }
+    .input-box {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      background: #1b2130;
+      border: 1px solid #303849;
+      border-radius: 15px;
+      padding: 8px;
+    }
+    textarea {
+      flex: 1;
+      resize: none;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: white;
+      font-size: 16px;
+      padding: 10px;
+      min-height: 45px;
+      max-height: 160px;
+    }
+    textarea::placeholder { color: #7f8797; }
+    button {
+      width: 45px;
+      height: 45px;
+      border: 0;
+      border-radius: 12px;
+      background: #7c6cff;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      flex: 0 0 45px;
+    }
+    button:hover { background: #6559ef; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .hint {
+      max-width: 900px;
+      margin: 7px auto 0;
+      color: #687286;
+      font-size: 12px;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .welcome h1 { font-size: 30px; }
+      .bubble { max-width: 86%; }
+    }
+  </style>
 </head>
 <body>
-  <main class="app">
-    <aside class="sidebar">
-      <div class="brand">✦ <span>Vedant AI</span></div>
-      <button id="newChat" class="new-chat">＋ New chat</button>
-      <div class="side-note">Your conversations stay in this browser.</div>
-    </aside>
+  <header>
+    <div class="logo">Vedant <span>AI</span></div>
+  </header>
 
-    <section class="chat">
-      <header class="topbar">
-        <div>
-          <h1>Vedant AI</h1>
-          <p>Ask anything</p>
-        </div>
-        <button id="theme" class="icon-btn" aria-label="Toggle theme">☀</button>
-      </header>
-
-      <div id="messages" class="messages">
-        <div class="welcome">
-          <div class="orb">✦</div>
-          <h2>How can I help?</h2>
-          <p>Ask Vedant AI a question to get started.</p>
-          <div class="suggestions">
-            <button>Explain something simply</button>
-            <button>Help me write something</button>
-            <button>Give me a creative idea</button>
-          </div>
-        </div>
+  <main id="chat">
+    <div class="chat-inner" id="chatInner">
+      <div class="welcome" id="welcome">
+        <div class="icon">V</div>
+        <h1>How can I help you?</h1>
+        <p>Ask Vedant AI anything.</p>
       </div>
-
-      <form id="chatForm" class="composer">
-        <textarea id="input" rows="1" maxlength="8000"
-          placeholder="Message Vedant AI..." autocomplete="off"></textarea>
-        <button id="send" type="submit" aria-label="Send message">➤</button>
-      </form>
-      <div class="disclaimer">Vedant AI can make mistakes. Check important information.</div>
-    </section>
+    </div>
   </main>
 
-<script>
-const messagesEl = document.getElementById("messages");
-const input = document.getElementById("input");
-const form = document.getElementById("chatForm");
-const send = document.getElementById("send");
-let messages = [];
+  <div class="input-area">
+    <form class="input-box" id="chatForm">
+      <textarea id="messageInput" rows="1" placeholder="Message Vedant AI..."></textarea>
+      <button id="sendButton" type="submit" aria-label="Send">➤</button>
+    </form>
+    <div class="hint">Vedant AI can make mistakes. Check important information.</div>
+  </div>
 
-function addMessage(role, text) {
-  const row = document.createElement("div");
-  row.className = "row " + role;
-  const bubble = document.createElement("div");
-  bubble.className = "bubble";
-  bubble.textContent = text;
-  row.appendChild(bubble);
-  messagesEl.appendChild(row);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-}
+  <script>
+    const chatInner = document.getElementById("chatInner");
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("messageInput");
+    const form = document.getElementById("chatForm");
+    const sendButton = document.getElementById("sendButton");
+    const welcome = document.getElementById("welcome");
 
-function clearWelcome() {
-  const welcome = messagesEl.querySelector(".welcome");
-  if (welcome) welcome.remove();
-}
+    const history = [];
 
-async function sendMessage(text) {
-  clearWelcome();
-  addMessage("user", text);
-  messages.push({ role: "user", content: text });
+    function addMessage(text, type) {
+      if (welcome) welcome.style.display = "none";
 
-  send.disabled = true;
-  input.disabled = true;
-  addMessage("assistant", "Thinking…");
-  const thinking = messagesEl.lastElementChild.querySelector(".bubble");
+      const row = document.createElement("div");
+      row.className = `message ${type}`;
 
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages })
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = type === "user" ? "U" : "V";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+
+      row.appendChild(avatar);
+      row.appendChild(bubble);
+      chatInner.appendChild(row);
+      chat.scrollTop = chat.scrollHeight;
+
+      return bubble;
+    }
+
+    function resizeInput() {
+      input.style.height = "auto";
+      input.style.height = Math.min(input.scrollHeight, 160) + "px";
+    }
+
+    input.addEventListener("input", resizeInput);
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Request failed");
 
-    thinking.textContent = data.reply;
-    messages.push({ role: "assistant", content: data.reply });
-  } catch (err) {
-    thinking.textContent = "⚠ " + err.message;
-  } finally {
-    send.disabled = false;
-    input.disabled = false;
-    input.focus();
-  }
-}
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-form.addEventListener("submit", e => {
-  e.preventDefault();
-  const text = input.value.trim();
-  if (!text || send.disabled) return;
-  input.value = "";
-  input.style.height = "auto";
-  sendMessage(text);
-});
+      const text = input.value.trim();
+      if (!text || sendButton.disabled) return;
 
-input.addEventListener("input", () => {
-  input.style.height = "auto";
-  input.style.height = Math.min(input.scrollHeight, 160) + "px";
-});
+      addMessage(text, "user");
+      history.push({ role: "user", content: text });
 
-input.addEventListener("keydown", e => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    form.requestSubmit();
-  }
-});
+      input.value = "";
+      resizeInput();
+      sendButton.disabled = true;
 
-document.getElementById("newChat").onclick = () => {
-  messages = [];
-  messagesEl.innerHTML = `
-    <div class="welcome">
-      <div class="orb">✦</div>
-      <h2>How can I help?</h2>
-      <p>Ask Vedant AI a question to get started.</p>
-      <div class="suggestions">
-        <button>Explain something simply</button>
-        <button>Help me write something</button>
-        <button>Give me a creative idea</button>
-      </div>
-    </div>`;
-  wireSuggestions();
-};
+      const bubble = addMessage("Thinking...", "ai");
+      bubble.classList.add("typing");
 
-document.getElementById("theme").onclick = () => {
-  document.body.classList.toggle("light");
-};
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: history })
+        });
 
-function wireSuggestions() {
-  document.querySelectorAll(".suggestions button").forEach(btn => {
-    btn.onclick = () => {
-      input.value = btn.textContent;
-      input.focus();
-    };
-  });
-}
-wireSuggestions();
-</script>
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Request failed.");
+        }
+
+        bubble.classList.remove("typing");
+        bubble.textContent = data.reply;
+        history.push({ role: "assistant", content: data.reply });
+      } catch (error) {
+        bubble.classList.remove("typing");
+        bubble.textContent = "Error: " + error.message;
+        history.pop();
+      } finally {
+        sendButton.disabled = false;
+        input.focus();
+        chat.scrollTop = chat.scrollHeight;
+      }
+    });
+  </script>
 </body>
 </html>
