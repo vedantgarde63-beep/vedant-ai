@@ -3,99 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Vedant AI - an AI assistant">
+  <meta name="theme-color" content="#0b0b0f">
   <title>Vedant AI</title>
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
+      min-height: 100vh;
       font-family: Arial, Helvetica, sans-serif;
-      background: #0b0f19;
-      color: #fff;
-      height: 100vh;
+      background: #0b0b0f;
+      color: white;
       display: flex;
       flex-direction: column;
     }
+
     header {
       height: 64px;
       display: flex;
       align-items: center;
       padding: 0 22px;
-      border-bottom: 1px solid #252b3a;
-      background: #101522;
-      flex-shrink: 0;
+      border-bottom: 1px solid #24242c;
+      background: #101015;
     }
-    .logo { font-size: 23px; font-weight: 700; }
-    .logo span { color: #7c6cff; }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: .5px;
+    }
+
+    .logo span {
+      opacity: .55;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 900px;
+      margin: auto;
+    }
+
     #chat {
       flex: 1;
       overflow-y: auto;
-      padding: 24px 16px;
+      padding: 28px 18px 130px;
     }
-    .chat-inner { max-width: 900px; margin: 0 auto; }
+
     .welcome {
+      min-height: 55vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      margin-top: 18vh;
       padding: 20px;
     }
-    .welcome .icon {
-      width: 62px;
-      height: 62px;
-      margin: 0 auto 18px;
-      border-radius: 20px;
-      background: #7c6cff;
-      display: grid;
-      place-items: center;
-      font-size: 28px;
-      font-weight: bold;
+
+    .welcome h1 {
+      font-size: clamp(38px, 8vw, 64px);
+      margin: 0 0 12px;
+      background: linear-gradient(90deg, #ffffff, #9c9ca8);
+      -webkit-background-clip: text;
+      color: transparent;
     }
-    .welcome h1 { font-size: 38px; margin-bottom: 10px; }
-    .welcome p { color: #9da5b4; font-size: 17px; }
+
+    .welcome p {
+      color: #9b9ba6;
+      font-size: 17px;
+      margin: 0;
+    }
+
     .message {
       display: flex;
       gap: 12px;
-      margin: 20px 0;
-      align-items: flex-start;
+      margin: 18px 0;
+      line-height: 1.6;
     }
+
     .avatar {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
       border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: #7c6cff;
-      flex: 0 0 36px;
-      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #24242d;
+      font-size: 14px;
+      font-weight: bold;
     }
-    .user .avatar { background: #303747; }
-    .bubble {
-      max-width: 78%;
-      line-height: 1.65;
+
+    .user .avatar {
+      background: #ffffff;
+      color: #111;
+    }
+
+    .content {
+      max-width: 760px;
       white-space: pre-wrap;
-      overflow-wrap: anywhere;
+      word-break: break-word;
+      padding-top: 5px;
     }
-    .user .bubble {
-      background: #202737;
-      padding: 10px 15px;
-      border-radius: 14px;
+
+    .user .content {
+      color: #f5f5f7;
     }
-    .ai .bubble { padding-top: 5px; }
-    .typing { color: #8d96a8; font-style: italic; }
+
+    .assistant .content {
+      color: #d8d8df;
+    }
+
+    .typing {
+      opacity: .65;
+    }
+
     .input-area {
-      padding: 14px;
-      border-top: 1px solid #252b3a;
-      background: #101522;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px;
+      background: linear-gradient(transparent, #0b0b0f 25%);
     }
+
     .input-box {
       max-width: 900px;
-      margin: 0 auto;
+      margin: auto;
       display: flex;
       align-items: flex-end;
-      gap: 8px;
-      background: #1b2130;
-      border: 1px solid #303849;
-      border-radius: 15px;
-      padding: 8px;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid #30303a;
+      border-radius: 18px;
+      background: #15151b;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
     }
+
     textarea {
       flex: 1;
       resize: none;
@@ -104,148 +153,230 @@
       background: transparent;
       color: white;
       font-size: 16px;
-      padding: 10px;
-      min-height: 45px;
+      line-height: 1.5;
       max-height: 160px;
+      padding: 9px;
+      font-family: inherit;
     }
-    textarea::placeholder { color: #7f8797; }
-    button {
-      width: 45px;
-      height: 45px;
+
+    textarea::placeholder {
+      color: #777783;
+    }
+
+    #send {
+      width: 44px;
+      height: 44px;
       border: 0;
-      border-radius: 12px;
-      background: #7c6cff;
-      color: white;
+      border-radius: 13px;
+      background: white;
+      color: #111;
       font-size: 20px;
       cursor: pointer;
-      flex: 0 0 45px;
+      font-weight: bold;
     }
-    button:hover { background: #6559ef; }
-    button:disabled { opacity: .5; cursor: not-allowed; }
-    .hint {
-      max-width: 900px;
-      margin: 7px auto 0;
-      color: #687286;
-      font-size: 12px;
+
+    #send:hover {
+      opacity: .85;
+    }
+
+    #send:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+
+    .notice {
       text-align: center;
+      color: #666672;
+      font-size: 11px;
+      margin-top: 8px;
     }
+
     @media (max-width: 600px) {
-      .welcome h1 { font-size: 30px; }
-      .bubble { max-width: 86%; }
+      header {
+        padding: 0 15px;
+      }
+
+      #chat {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .message {
+        gap: 8px;
+      }
+
+      .avatar {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        font-size: 12px;
+      }
+
+      .input-area {
+        padding: 10px;
+      }
+
+      .input-box {
+        border-radius: 15px;
+      }
     }
   </style>
 </head>
+
 <body>
+
   <header>
     <div class="logo">Vedant <span>AI</span></div>
   </header>
 
-  <main id="chat">
-    <div class="chat-inner" id="chatInner">
+  <main>
+    <div id="chat">
+
       <div class="welcome" id="welcome">
-        <div class="icon">V</div>
-        <h1>How can I help you?</h1>
-        <p>Ask Vedant AI anything.</p>
+        <h1>Vedant AI</h1>
+        <p>Ask me anything.</p>
       </div>
+
     </div>
   </main>
 
   <div class="input-area">
-    <form class="input-box" id="chatForm">
-      <textarea id="messageInput" rows="1" placeholder="Message Vedant AI..."></textarea>
-      <button id="sendButton" type="submit" aria-label="Send">➤</button>
-    </form>
-    <div class="hint">Vedant AI can make mistakes. Check important information.</div>
+    <div class="input-box">
+
+      <textarea
+        id="message"
+        rows="1"
+        placeholder="Message Vedant AI..."
+        autocomplete="off"
+      ></textarea>
+
+      <button id="send" title="Send">↑</button>
+
+    </div>
+
+    <div class="notice">
+      Vedant AI can make mistakes. Check important information.
+    </div>
   </div>
 
   <script>
-    const chatInner = document.getElementById("chatInner");
     const chat = document.getElementById("chat");
-    const input = document.getElementById("messageInput");
-    const form = document.getElementById("chatForm");
-    const sendButton = document.getElementById("sendButton");
     const welcome = document.getElementById("welcome");
+    const textarea = document.getElementById("message");
+    const sendButton = document.getElementById("send");
 
-    const history = [];
+    let messages = [];
+    let busy = false;
 
-    function addMessage(text, type) {
-      if (welcome) welcome.style.display = "none";
+    function addMessage(role, text) {
+      if (welcome) {
+        welcome.remove();
+      }
 
-      const row = document.createElement("div");
-      row.className = `message ${type}`;
+      const wrapper = document.createElement("div");
+      wrapper.className = "message " + role;
 
       const avatar = document.createElement("div");
       avatar.className = "avatar";
-      avatar.textContent = type === "user" ? "U" : "V";
+      avatar.textContent = role === "user" ? "Y" : "V";
 
-      const bubble = document.createElement("div");
-      bubble.className = "bubble";
-      bubble.textContent = text;
+      const content = document.createElement("div");
+      content.className = "content";
+      content.textContent = text;
 
-      row.appendChild(avatar);
-      row.appendChild(bubble);
-      chatInner.appendChild(row);
+      wrapper.appendChild(avatar);
+      wrapper.appendChild(content);
+
+      chat.appendChild(wrapper);
       chat.scrollTop = chat.scrollHeight;
 
-      return bubble;
+      return content;
     }
 
-    function resizeInput() {
-      input.style.height = "auto";
-      input.style.height = Math.min(input.scrollHeight, 160) + "px";
+    function setBusy(value) {
+      busy = value;
+      sendButton.disabled = value;
+      textarea.disabled = value;
     }
 
-    input.addEventListener("input", resizeInput);
+    async function sendMessage() {
+      const text = textarea.value.trim();
 
-    input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        form.requestSubmit();
+      if (!text || busy) {
+        return;
       }
-    });
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+      textarea.value = "";
+      textarea.style.height = "auto";
 
-      const text = input.value.trim();
-      if (!text || sendButton.disabled) return;
+      messages.push({
+        role: "user",
+        content: text
+      });
 
-      addMessage(text, "user");
-      history.push({ role: "user", content: text });
+      addMessage("user", text);
 
-      input.value = "";
-      resizeInput();
-      sendButton.disabled = true;
+      setBusy(true);
 
-      const bubble = addMessage("Thinking...", "ai");
-      bubble.classList.add("typing");
+      const thinking = addMessage("assistant", "Thinking...");
+      thinking.classList.add("typing");
 
       try {
         const response = await fetch("/api/chat", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: history })
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            messages: messages
+          })
         });
 
         const data = await response.json();
+
+        thinking.classList.remove("typing");
 
         if (!response.ok) {
           throw new Error(data.error || "Request failed.");
         }
 
-        bubble.classList.remove("typing");
-        bubble.textContent = data.reply;
-        history.push({ role: "assistant", content: data.reply });
+        const reply = data.reply || "I couldn't generate a response.";
+
+        thinking.textContent = reply;
+
+        messages.push({
+          role: "assistant",
+          content: reply
+        });
+
       } catch (error) {
-        bubble.classList.remove("typing");
-        bubble.textContent = "Error: " + error.message;
-        history.pop();
-      } finally {
-        sendButton.disabled = false;
-        input.focus();
-        chat.scrollTop = chat.scrollHeight;
+        thinking.classList.remove("typing");
+        thinking.textContent =
+          "Sorry, Vedant AI couldn't answer right now.";
+        console.error(error);
+      }
+
+      setBusy(false);
+      textarea.focus();
+    }
+
+    sendButton.addEventListener("click", sendMessage);
+
+    textarea.addEventListener("keydown", function(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
       }
     });
+
+    textarea.addEventListener("input", function() {
+      this.style.height = "auto";
+      this.style.height =
+        Math.min(this.scrollHeight, 160) + "px";
+    });
+
+    textarea.focus();
   </script>
+
 </body>
 </html>
